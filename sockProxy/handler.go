@@ -27,16 +27,16 @@ func handleClientRequest(client net.Conn) error {
 
 	var host, port string
 	switch buffer[3] {
-	case 0x01: //IP V4
+	case 0x01: //IPv4
 		host = net.IPv4(
 			buffer[4],
 			buffer[5],
 			buffer[6],
 			buffer[7],
 		).String()
-	case 0x03: //域名
+	case 0x03: //domain
 		host = string(buffer[5 : n-2])
-	case 0x04: //IP V6
+	case 0x04: //IPv6
 		host = net.IP{
 			buffer[4],
 			buffer[5],
