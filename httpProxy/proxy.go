@@ -14,7 +14,7 @@ func ProxyHttp(port uint16) {
 		log.Fatalln("Error: ", err.Error())
 	}
 	server := http.Server{
-		Addr:      fmt.Sprintf("localhost:%d", port),
+		Addr:      fmt.Sprintf(":%d", port),
 		TLSConfig: &tls.Config{Certificates: []tls.Certificate{cert}},
 		Handler:   &ProxyHandler{},
 	}
