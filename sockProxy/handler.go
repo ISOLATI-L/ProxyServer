@@ -1,4 +1,4 @@
-package sock5Proxy
+package sockProxy
 
 import (
 	"net"

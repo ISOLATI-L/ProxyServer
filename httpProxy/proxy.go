@@ -30,7 +30,7 @@ func (ph *ProxyHandler) ServeHTTP(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
-	log.Printf("Received request %s %s %s\n", r.Method, r.Host, r.RemoteAddr)
+	log.Printf("Received http request %s %s %s\n", r.Method, r.Host, r.RemoteAddr)
 	if r.Method == http.MethodConnect {
 		httpsHandler(w, r)
 	} else {

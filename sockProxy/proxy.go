@@ -1,4 +1,4 @@
-package sock5Proxy
+package sockProxy
 
 import (
 	"fmt"
@@ -6,13 +6,14 @@ import (
 	"net"
 )
 
-func ProxySock5(port uint16) {
-	l, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+func ProxySock(port uint16) {
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		log.Fatalln("Error: ", err.Error())
 	}
 	for {
-		client, err := l.Accept()
+		client, err := listener.Accept()
+		log.Printf("Received socket request %s %s\n", client.LocalAddr(), client.RemoteAddr())
 		if err != nil {
 			log.Fatalln("Error: ", err.Error())
 		}
