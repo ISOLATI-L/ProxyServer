@@ -1,13 +1,12 @@
 package sockProxy
 
 import (
-	"fmt"
 	"log"
 	"net"
 )
 
-func Listen(port uint16) {
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+func Listen(addr string) {
+	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalln("Error: ", err.Error())
 	}

@@ -2,19 +2,18 @@ package httpProxy
 
 import (
 	"crypto/tls"
-	"fmt"
 	"log"
 	"net/http"
 	"proxy/certificate"
 )
 
-func Listen(port uint16) {
+func Listen(addr string) {
 	cert, err := certificate.GenCertificate()
 	if err != nil {
 		log.Fatalln("Error: ", err.Error())
 	}
 	server := http.Server{
-		Addr:      fmt.Sprintf(":%d", port),
+		Addr:      addr,
 		TLSConfig: &tls.Config{Certificates: []tls.Certificate{cert}},
 		Handler:   &ProxyHandler{},
 	}
