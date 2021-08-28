@@ -8,7 +8,7 @@ import (
 	"proxy/certificate"
 )
 
-func ProxyHttp(port uint16) {
+func Listen(port uint16) {
 	cert, err := certificate.GenCertificate()
 	if err != nil {
 		log.Fatalln("Error: ", err.Error())

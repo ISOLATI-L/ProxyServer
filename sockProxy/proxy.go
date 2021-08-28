@@ -6,7 +6,7 @@ import (
 	"net"
 )
 
-func ProxySock(port uint16) {
+func Listen(port uint16) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		log.Fatalln("Error: ", err.Error())
