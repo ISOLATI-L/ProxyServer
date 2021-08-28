@@ -13,7 +13,7 @@ func ProxySock(port uint16) {
 	}
 	for {
 		client, err := listener.Accept()
-		log.Printf("Received socket request %s %s\n", client.LocalAddr(), client.RemoteAddr())
+		log.Printf("Received socket request %s %s\n", client.LocalAddr().String(), client.RemoteAddr().String())
 		if err != nil {
 			log.Fatalln("Error: ", err.Error())
 		}
