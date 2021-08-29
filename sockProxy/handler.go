@@ -1,33 +1,29 @@
 package sockProxy
 
 import (
-	"io"
 	"net"
 	"proxy/transfer"
 	"strconv"
 )
 
-const BUFFER_SIZE = 1024
+const BUFFER_SIZE = 4096
 
 func handleClientRequest(client net.Conn) error {
 	if client == nil {
 		return nil
 	}
 
-	// var buffer []byte
-	_, err := io.ReadAll(client)
-	// _, err := client.Read(buffer)
+	var buffer [BUFFER_SIZE]byte
+	_, err := client.Read(buffer[:])
 	if err != nil {
 		return err
 	}
 
 	client.Write([]byte{0x05, 0x00})
-	buffer, err := io.ReadAll(client)
-	// n, err := client.Read(buffer)
+	n, err := client.Read(buffer[:])
 	if err != nil {
 		return err
 	}
-	n := len(buffer)
 
 	var host, port string
 	switch buffer[3] {
