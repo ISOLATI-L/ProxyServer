@@ -13,14 +13,14 @@ func handleClientRequest(client net.Conn) error {
 		return nil
 	}
 
-	var buffer []byte
-	_, err := client.Read(buffer)
+	var buffer [1024]byte
+	_, err := client.Read(buffer[:])
 	if err != nil {
 		return err
 	}
 
 	client.Write([]byte{0x05, 0x00})
-	n, err := client.Read(buffer)
+	n, err := client.Read(buffer[:])
 	if err != nil {
 		return err
 	}
