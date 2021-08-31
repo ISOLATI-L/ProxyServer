@@ -19,7 +19,7 @@ func handleClientRequest(client net.Conn) error {
 		return err
 	}
 
-	if buffer[0] == 5 { // 只处理sock5
+	if buffer[0] == 0x05 { // 只处理sock5
 		client.Write([]byte{0x05, 0x00})
 		n, err := client.Read(buffer[:])
 		if err != nil {
