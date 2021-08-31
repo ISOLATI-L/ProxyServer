@@ -2,6 +2,7 @@ package transfer
 
 import (
 	"io"
+	"sync"
 )
 
 type OneWayTransferor struct {
@@ -10,7 +11,12 @@ type OneWayTransferor struct {
 }
 
 func (t OneWayTransferor) Start() {
-	go transfer(t.Destination, t.Source)
+	defer t.Destination.Close()
+	defer t.Source.Close()
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go transfer(t.Destination, t.Source, wg)
+	wg.Wait()
 }
 
 type TwoWayTransferor struct {
@@ -19,12 +25,16 @@ type TwoWayTransferor struct {
 }
 
 func (t TwoWayTransferor) Start() {
-	go transfer(t.Stream1, t.Stream2)
-	go transfer(t.Stream2, t.Stream1)
+	defer t.Stream1.Close()
+	defer t.Stream2.Close()
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go transfer(t.Stream1, t.Stream2, wg)
+	go transfer(t.Stream2, t.Stream1, wg)
+	wg.Wait()
 }
 
-func transfer(destination io.WriteCloser, source io.ReadCloser) {
-	defer destination.Close()
-	defer source.Close()
+func transfer(destination io.Writer, source io.Reader, wg sync.WaitGroup) {
 	io.Copy(destination, source)
+	wg.Done()
 }
