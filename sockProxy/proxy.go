@@ -6,19 +6,13 @@ import (
 )
 
 func Listen(addr string) {
-	// tcpaddr, err := net.ResolveTCPAddr("tcp4", addr)
-	// if err != nil {
-	// 	log.Fatalln("Error: ", err.Error())
-	// }
-	// // log.Println(tcpaddr)
-	// listener, err := net.ListenTCP("tcp", tcpaddr)
-	listener, err := net.Listen("tcp", addr)
+	listener, err := net.Listen("tcp", addr) // 监听
 	if err != nil {
 		log.Fatalln("Error: ", err.Error())
 	}
 	for {
 		conn, err := listener.Accept()
-		log.Printf("Received socket request %s %s\n", conn.LocalAddr().String(), conn.RemoteAddr().String())
+		log.Printf("Received socket request %s %s\n", conn.LocalAddr().String(), conn.RemoteAddr().String()) // 接收到tcp连接
 		if err != nil {
 			log.Fatalln("Error: ", err.Error())
 		}

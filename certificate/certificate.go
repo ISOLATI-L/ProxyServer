@@ -19,6 +19,7 @@ func GenCertificate() (cert tls.Certificate, err error) {
 	return tls.X509KeyPair(rawCert, rawKey)
 }
 
+// 生成密钥对，抄的
 func generateKeyPair() (rawCert, rawKey []byte, err error) {
 	// https://golang.org/src/crypto/tls/generate_cert.go
 

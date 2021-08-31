@@ -8,7 +8,7 @@ import (
 )
 
 func Listen(addr string) {
-	cert, err := certificate.GenCertificate()
+	cert, err := certificate.GenCertificate() //生成https传输需要用到的密钥对
 	if err != nil {
 		log.Fatalln("Error: ", err.Error())
 	}
@@ -31,8 +31,8 @@ func (ph *ProxyHandler) ServeHTTP(
 ) {
 	log.Printf("Received http request %s %s %s\n", r.Method, r.Host, r.RemoteAddr)
 	if r.Method == http.MethodConnect {
-		httpsHandler(w, r)
+		httpsHandler(w, r) // 响应https连接
 	} else {
-		httpHandler(w, r)
+		httpHandler(w, r) // 处理http请求
 	}
 }

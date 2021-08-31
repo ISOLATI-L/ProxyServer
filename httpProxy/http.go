@@ -14,7 +14,7 @@ func httpHandler(
 ) {
 	transport := http.DefaultTransport
 	request := new(http.Request)
-	*request = *r
+	*request = *r // 复制一份请求，发送给host服务器
 
 	if clientIP, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
 		if prior, ok := request.Header["For"]; ok {
@@ -27,7 +27,7 @@ func httpHandler(
 		return
 	}
 
-	response, err := transport.RoundTrip(request)
+	response, err := transport.RoundTrip(request) // 获取host服务器响应
 	if err != nil {
 		log.Println("Error: ", err.Error())
 		w.WriteHeader(http.StatusBadGateway)
@@ -39,9 +39,8 @@ func httpHandler(
 			header.Add(key, v)
 		}
 	}
-	// log.Println(w.Header())
-	// log.Println(response.Header)
-	w.WriteHeader(response.StatusCode)
+
+	w.WriteHeader(response.StatusCode) // 将host服务器响应转发回客户端
 	io.Copy(w, response.Body)
 	if err != nil {
 		log.Println("Error: ", err.Error())

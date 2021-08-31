@@ -11,7 +11,7 @@ func httpsHandler(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
-	destConn, err := net.DialTimeout("tcp", r.Host, 60*time.Second)
+	destConn, err := net.DialTimeout("tcp", r.Host, 60*time.Second) // host服务器连接
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		return
@@ -24,7 +24,7 @@ func httpsHandler(
 		return
 	}
 
-	clientConn, _, err := hijacker.Hijack()
+	clientConn, _, err := hijacker.Hijack() // 客户端连接
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 	}
@@ -32,5 +32,5 @@ func httpsHandler(
 		Stream1: destConn,
 		Stream2: clientConn,
 	}
-	transferor.Start()
+	transferor.Start() // 交换客户端与host服务器数据
 }
