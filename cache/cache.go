@@ -75,6 +75,20 @@ func Get(abstract [16]byte) *Cache {
 
 // 保存缓存
 func Save(abstract [16]byte, cache *Cache) {
+	_, err := os.Stat("CacheFiles")
+	if err != nil {
+		if os.IsNotExist(err) {
+			err := os.Mkdir("CacheFiles", 0777)
+			if err != nil {
+				log.Println("Error: ", err.Error())
+				return
+			}
+		} else {
+			log.Println("Error: ", err.Error())
+			return
+		}
+	}
+
 	cacheName := "CacheFiles/" + hex.EncodeToString(abstract[:])
 	cacheFile, err := os.OpenFile(
 		cacheName,
