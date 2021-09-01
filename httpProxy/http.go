@@ -1,6 +1,7 @@
 package httpProxy
 
 import (
+	"ProxyServer/cache"
 	"io"
 	"log"
 	"net"
@@ -12,6 +13,8 @@ func httpHandler(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
+	log.Println(cache.GetAbstract(r.Header))
+
 	transport := http.DefaultTransport
 	request := new(http.Request)
 	*request = *r // 复制一份请求，发送给host服务器
