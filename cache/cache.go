@@ -3,7 +3,6 @@ package cache
 import (
 	"crypto/md5"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -14,12 +13,13 @@ type Cache struct {
 	Body       []byte
 }
 
-func GetAbstract(header http.Header) (string, error) {
+// 获取请求的md5校验值
+func GetAbstract(header http.Header) ([16]byte, error) {
 	headerData, err := json.Marshal(header)
 	if err != nil {
-		return "", err
+		return [16]byte{}, err
 	}
-	abstract := fmt.Sprintf("%x", md5.Sum(headerData))
+	abstract := md5.Sum(headerData)
 	return abstract, nil
 }
 

@@ -19,7 +19,7 @@ func httpHandler(
 		w.WriteHeader(http.StatusBadGateway)
 		return
 	}
-	log.Println(abstract)
+	log.Printf("%x\n", abstract)
 
 	transport := http.DefaultTransport
 	request := new(http.Request)
