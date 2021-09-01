@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"proxy/certificate"
+	"proxy/db"
 )
 
 func Listen(addr string) {
@@ -30,6 +31,24 @@ func (ph *ProxyHandler) ServeHTTP(
 	r *http.Request,
 ) {
 	log.Printf("Received http request %s %s %s\n", r.Method, r.Host, r.RemoteAddr)
+	row := db.DB.QueryRow(
+		`SELECT COUNT(host) FROM blacklist
+		WHERE host=? || ip=?;`,
+		r.Host,
+		r.Host,
+	)
+	var count int
+	err := row.Scan(
+		&count,
+	)
+	if err != nil {
+		log.Printf("An error occurred while connecting to sql: %s\n", err.Error())
+		return
+	}
+	if count > 0 {
+		log.Printf("%s is in blacklist.\n", r.Host)
+		return
+	}
 	if r.Method == http.MethodConnect {
 		httpsHandler(w, r) // 响应https连接
 	} else {
