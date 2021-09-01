@@ -60,7 +60,7 @@ func httpHandler(
 			Body:       body,
 		}
 
-		// go cache.Save(abstract, requestCache) // 保存缓存
+		go cache.Save(abstract, requestCache) // 保存缓存
 	}
 
 	h := w.Header()

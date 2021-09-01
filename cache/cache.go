@@ -22,27 +22,23 @@ type Cache struct {
 
 // 获取请求的md5校验值
 func GetAbstract(r *http.Request) ([16]byte, error) {
-	log.Println(r.Host)
-	log.Println(r.RequestURI)
+	// log.Println(r.Host)
+	// log.Println(r.RequestURI)
 
 	headerData, err := json.Marshal(r.Header)
 	if err != nil {
 		return [16]byte{}, err
 	}
 	headerData = []byte(r.RequestURI + ":" + string(headerData))
-	log.Println(string(headerData))
+	// log.Println(string(headerData))
 	abstract := md5.Sum(headerData)
 
-	log.Println(hex.EncodeToString(abstract[:]))
+	// log.Println(hex.EncodeToString(abstract[:]))
 	return abstract, nil
 }
 
 // 获取缓存
 func Get(abstract [16]byte) *Cache {
-	// abstract, err := GetAbstract(r.Header)
-	// if err != nil {
-	// 	return nil
-	// }
 	row := db.DB.QueryRow(
 		`SELECT file FROM cache
 		WHERE Cid=UNHEX(?)`,
