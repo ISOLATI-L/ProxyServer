@@ -11,17 +11,15 @@ func Listen(addr string) {
 		log.Fatalln("Error: ", err.Error())
 	}
 	for {
-		conn, err := listener.Accept()
-		log.Printf("Received socket request %s %s\n", conn.LocalAddr().String(), conn.RemoteAddr().String()) // 接收到tcp连接
-		if err != nil {
-			log.Fatalln("Error: ", err.Error())
-		}
-
-		go func(conn net.Conn) {
-			err := handleClientRequest(conn)
+		go func(conn net.Conn, err error) {
+			log.Printf("Received socket request %s %s\n", conn.LocalAddr().String(), conn.RemoteAddr().String()) // 接收到tcp连接
+			if err != nil {
+				log.Fatalln("Error: ", err.Error())
+			}
+			err = handleClientRequest(conn)
 			if err != nil {
 				log.Println("Error: ", err.Error())
 			}
-		}(conn)
+		}(listener.Accept())
 	}
 }
