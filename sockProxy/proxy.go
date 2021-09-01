@@ -14,11 +14,13 @@ func Listen(addr string) {
 		go func(conn net.Conn, err error) {
 			log.Printf("Received socket request %s %s\n", conn.LocalAddr().String(), conn.RemoteAddr().String()) // 接收到tcp连接
 			if err != nil {
-				log.Fatalln("Error: ", err.Error())
+				log.Println("Error: ", err.Error())
+				return
 			}
 			err = handleClientRequest(conn)
 			if err != nil {
 				log.Println("Error: ", err.Error())
+				return
 			}
 		}(listener.Accept())
 	}
