@@ -13,7 +13,7 @@ type OneWayTransferor struct {
 func (t OneWayTransferor) Start() {
 	defer t.Destination.Close()
 	defer t.Source.Close()
-	var wg sync.WaitGroup
+	wg := new(sync.WaitGroup)
 	wg.Add(1)
 	go transfer(t.Destination, t.Source, wg)
 	wg.Wait()
@@ -27,14 +27,14 @@ type TwoWayTransferor struct {
 func (t TwoWayTransferor) Start() {
 	defer t.Stream1.Close()
 	defer t.Stream2.Close()
-	var wg sync.WaitGroup
+	wg := new(sync.WaitGroup)
 	wg.Add(2)
 	go transfer(t.Stream1, t.Stream2, wg)
 	go transfer(t.Stream2, t.Stream1, wg)
 	wg.Wait()
 }
 
-func transfer(destination io.Writer, source io.Reader, wg sync.WaitGroup) {
+func transfer(destination io.Writer, source io.Reader, wg *sync.WaitGroup) {
 	io.Copy(destination, source)
 	wg.Done()
 }
