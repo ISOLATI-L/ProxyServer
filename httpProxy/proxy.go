@@ -32,6 +32,7 @@ func (ph *ProxyHandler) ServeHTTP(
 ) {
 	log.Printf("Received http request %s %s %s\n", r.Method, r.Host, r.RemoteAddr)
 
+	// 检查host是否在黑名单内
 	inBlacklist, err := blacklist.Check(r.Host)
 	if err != nil {
 		log.Printf("An error occurred while connecting to sql: %s\n", err.Error())
@@ -41,6 +42,7 @@ func (ph *ProxyHandler) ServeHTTP(
 		log.Printf("%s is in blacklist.\n", r.Host)
 		return
 	}
+
 	if r.Method == http.MethodConnect {
 		httpsHandler(w, r) // 响应https连接
 	} else {

@@ -44,6 +44,7 @@ func handleClientRequest(client net.Conn) error {
 			host = append(make(net.IP, 0, 16), buffer[4:20]...).String()
 		}
 
+		// 检查host是否在黑名单内
 		inBlacklist, err := blacklist.Check(host)
 		if err != nil {
 			return fmt.Errorf("an error occurred while connecting to sql: %s", err.Error())
