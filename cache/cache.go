@@ -48,7 +48,7 @@ func Get(abstract [16]byte) *Cache {
 	row := db.DB.QueryRow(
 		`SELECT file FROM cache
 		WHERE Cid=?`,
-		abstract,
+		abstract[:],
 	)
 	var cacheName string
 	err := row.Scan(
@@ -176,7 +176,7 @@ func Save(abstract [16]byte, cache *Cache) {
 	result, err := db.DB.Exec(
 		`INSERT INTO cache (Cid, file)
 		VALUES (?, ?);`,
-		abstract,
+		abstract[:],
 		cacheName,
 	)
 	if err != nil {
