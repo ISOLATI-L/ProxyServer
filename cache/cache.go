@@ -24,12 +24,13 @@ type Cache struct {
 func GetAbstract(r *http.Request) ([16]byte, error) {
 	log.Println(r.Host)
 	log.Println(r.RequestURI)
-	log.Println(r.URL)
 
 	headerData, err := json.Marshal(r.Header)
 	if err != nil {
 		return [16]byte{}, err
 	}
+	headerData = []byte(r.RequestURI + ":" + string(headerData))
+	log.Println(headerData)
 	abstract := md5.Sum(headerData)
 
 	log.Println(hex.EncodeToString(abstract[:]))
