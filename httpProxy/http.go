@@ -55,9 +55,11 @@ func httpHandler(
 			log.Println("Error: ", err.Error())
 		}
 		requestCache = &cache.Cache{
-			Header:     header,
-			StatusCode: statusCode,
-			Body:       body,
+			CacheStatus: cache.CacheStatus{
+				Header:     header,
+				StatusCode: statusCode,
+			},
+			Body: body,
 		}
 
 		go cache.Save(abstract, requestCache) // 保存缓存
