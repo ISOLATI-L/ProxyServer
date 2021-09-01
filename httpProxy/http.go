@@ -13,11 +13,11 @@ func httpHandler(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
-	abstract, err := cache.GetAbstract(r)
+	// abstract, err := cache.GetAbstract(r)
 	var requestCache *cache.Cache = nil
-	if err == nil {
-		requestCache = cache.Get(abstract) // 获取缓存
-	}
+	// if err == nil {
+	// 	requestCache = cache.Get(abstract) // 获取缓存
+	// }
 
 	// 没有缓存则转发请求，并保存缓存
 	if requestCache == nil {
@@ -62,7 +62,7 @@ func httpHandler(
 			Body: body,
 		}
 
-		go cache.Save(abstract, requestCache) // 保存缓存
+		// go cache.Save(abstract, requestCache) // 保存缓存
 	}
 
 	h := w.Header()
@@ -72,7 +72,7 @@ func httpHandler(
 		}
 	}
 	w.WriteHeader(requestCache.StatusCode) // 将host服务器响应转发回客户端
-	_, err = w.Write(requestCache.Body)
+	_, err := w.Write(requestCache.Body)
 	if err != nil {
 		log.Println("Error: ", err.Error())
 		w.WriteHeader(http.StatusBadGateway)
