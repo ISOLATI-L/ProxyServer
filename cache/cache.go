@@ -11,14 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"unsafe"
 )
-
-type saveCache struct {
-	Header     []byte
-	StatusCode int
-	Body       []byte
-}
 
 type Cache struct {
 	Header     http.Header
@@ -75,18 +68,13 @@ func Get(abstract [16]byte) *Cache {
 		log.Println("Error: ", err.Error())
 		return nil
 	}
-	cacheData := *(**saveCache)(unsafe.Pointer(&cacheByte))
-	result := new(Cache)
-	var header http.Header
-	err = json.Unmarshal(cacheData.Header, &header)
+	var cacheData *Cache
+	err = json.Unmarshal(cacheByte, cacheData)
 	if err != nil {
 		log.Println("Error: ", err.Error())
 		return nil
 	}
-	result.Header = header
-	result.Body = cacheData.Body
-	result.StatusCode = cacheData.StatusCode
-	return result
+	return cacheData
 }
 
 // 保存缓存
@@ -116,16 +104,11 @@ func Save(abstract [16]byte, cache *Cache) {
 		return
 	}
 
-	cacheData := new(saveCache)
-	cacheData.Header, err = json.Marshal(cache.Header)
+	cacheByte, err := json.Marshal(cache)
 	if err != nil {
 		log.Println("Error: ", err.Error())
 		return
 	}
-	cacheData.Body = cache.Body
-	cacheData.StatusCode = cache.StatusCode
-
-	cacheByte := *(*[]byte)(unsafe.Pointer(cacheData))
 	_, err = cacheFile.Write(cacheByte)
 	if err != nil {
 		log.Println("Error: ", err.Error())
