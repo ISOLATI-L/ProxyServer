@@ -2,9 +2,9 @@ package cache
 
 import (
 	"crypto/md5"
+	"encoding/json"
 	"fmt"
 	"net/http"
-	"unsafe"
 )
 
 type Cache struct {
@@ -14,10 +14,13 @@ type Cache struct {
 	Body       []byte
 }
 
-func GetAbstract(header http.Header) string {
-	headerData := *(*[]byte)(unsafe.Pointer(&header))
+func GetAbstract(header http.Header) (string, error) {
+	headerData, err := json.Marshal(header)
+	if err != nil {
+		return "", err
+	}
 	abstract := fmt.Sprintf("%x", md5.Sum(headerData))
-	return abstract
+	return abstract, nil
 }
 
 func Check(r *http.Request) (bool, error) {
