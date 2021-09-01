@@ -1,7 +1,10 @@
 package sockProxy
 
 import (
+	"fmt"
+	"log"
 	"net"
+	"proxy/blacklist"
 	"proxy/transfer"
 	"strconv"
 )
@@ -40,6 +43,16 @@ func handleClientRequest(client net.Conn) error {
 		case 0x04: // IPv6
 			host = append(make(net.IP, 0, 16), buffer[4:20]...).String()
 		}
+
+		inBlacklist, err := blacklist.Check(host)
+		if err != nil {
+			return fmt.Errorf("an error occurred while connecting to sql: %s", err.Error())
+		}
+		if inBlacklist {
+			log.Printf("%s is in blacklist.\n", host)
+			return nil
+		}
+
 		port = strconv.Itoa(int(buffer[n-2])<<8 | int(buffer[n-1]))
 
 		server, err := net.Dial("tcp", net.JoinHostPort(host, port)) // host服务器连接
