@@ -30,7 +30,7 @@ func GetAbstract(r *http.Request) ([16]byte, error) {
 		return [16]byte{}, err
 	}
 	headerData = []byte(r.RequestURI + ":" + string(headerData))
-	log.Println(headerData)
+	log.Println(string(headerData))
 	abstract := md5.Sum(headerData)
 
 	log.Println(hex.EncodeToString(abstract[:]))
