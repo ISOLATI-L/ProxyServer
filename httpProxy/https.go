@@ -1,9 +1,9 @@
 package httpProxy
 
 import (
+	"ProxyServer/transfer"
 	"net"
 	"net/http"
-	"proxy/transfer"
 	"time"
 )
 

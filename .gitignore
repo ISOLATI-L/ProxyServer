@@ -1,4 +1,5 @@
 *.zip
 *.txt
 *.ini
-proxy
+ProxyServer
+ProxyServer.exe

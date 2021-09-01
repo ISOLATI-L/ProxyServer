@@ -1,4 +1,4 @@
-module proxy
+module ProxyServer
 
 go 1.16
 

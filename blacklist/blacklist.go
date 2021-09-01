@@ -1,7 +1,7 @@
 package blacklist
 
 import (
-	"proxy/db"
+	"ProxyServer/db"
 	"strings"
 )
 

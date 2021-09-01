@@ -1,11 +1,11 @@
 package sockProxy
 
 import (
+	"ProxyServer/blacklist"
+	"ProxyServer/transfer"
 	"fmt"
 	"log"
 	"net"
-	"proxy/blacklist"
-	"proxy/transfer"
 	"strconv"
 )
 

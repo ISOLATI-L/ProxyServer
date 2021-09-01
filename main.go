@@ -1,9 +1,9 @@
 package main
 
 import (
+	"ProxyServer/httpProxy"
+	"ProxyServer/sockProxy"
 	"fmt"
-	"proxy/httpProxy"
-	"proxy/sockProxy"
 	"sync"
 )
 

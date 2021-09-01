@@ -1,11 +1,11 @@
 package httpProxy
 
 import (
+	"ProxyServer/blacklist"
+	"ProxyServer/certificate"
 	"crypto/tls"
 	"log"
 	"net/http"
-	"proxy/blacklist"
-	"proxy/certificate"
 )
 
 func Listen(addr string) {
