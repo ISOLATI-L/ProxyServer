@@ -1,11 +1,15 @@
 package cache
 
 import (
+	"ProxyServer/db"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"unsafe"
 )
 
 type Cache struct {
@@ -24,16 +28,40 @@ func GetAbstract(header http.Header) ([16]byte, error) {
 	return abstract, nil
 }
 
-func GetCache(r *http.Request) *Cache {
+func Get(r *http.Request) *Cache {
 	abstract, err := GetAbstract(r.Header)
 	if err != nil {
 		return nil
 	}
 	log.Println(hex.EncodeToString(abstract[:]))
-	// db.DB.QueryRow(
-	// 	`SELECT COUNT(Cid) FROM blacklist
-	// 	WHERE Cid=UNHEX(?)`,
-	// 	hex.EncodeToString(abstract[:]),
-	// )
-	return &Cache{}
+	row := db.DB.QueryRow(
+		`SELECT file FROM cache
+		WHERE Cid=UNHEX(?)`,
+		hex.EncodeToString(abstract[:]),
+	)
+	var cacheName string
+	err = row.Scan(
+		&cacheName,
+	)
+	if err != nil {
+		return nil
+	}
+	cacheFile, err := os.OpenFile(
+		cacheName,
+		os.O_RDONLY,
+		0666,
+	)
+	if err != nil {
+		return nil
+	}
+	defer cacheFile.Close()
+	cacheByte, err := io.ReadAll(cacheFile)
+	if err != nil {
+		return nil
+	}
+	cacheData := *(**Cache)(unsafe.Pointer(&cacheByte))
+	return cacheData
+}
+
+func Save(cache *Cache) {
 }

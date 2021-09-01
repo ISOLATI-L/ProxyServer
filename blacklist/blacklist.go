@@ -12,7 +12,7 @@ func Check(host string) (bool, error) {
 		WHERE host=?`,
 		host,
 	)
-	var count int
+	var count uint
 	err := row.Scan(
 		&count,
 	)
