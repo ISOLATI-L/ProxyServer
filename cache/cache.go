@@ -99,6 +99,7 @@ func Get(abstract [16]byte) *Cache {
 		return nil
 	}
 
+	log.Printf("Got cache %x.\n", abstract)
 	return cacheData
 }
 
