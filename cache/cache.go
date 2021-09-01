@@ -13,10 +13,14 @@ import (
 	"os"
 )
 
-type Cache struct {
+type CacheStatus struct {
 	Header     http.Header
 	StatusCode int
-	Body       []byte
+}
+
+type Cache struct {
+	CacheStatus
+	Body []byte
 }
 
 // 获取请求的md5校验值
@@ -53,6 +57,29 @@ func Get(abstract [16]byte) *Cache {
 		}
 		return nil
 	}
+
+	cacheStatusFile, err := os.OpenFile(
+		cacheName+".status",
+		os.O_RDONLY,
+		0666,
+	)
+	if err != nil {
+		log.Println("Error: ", err.Error())
+		return nil
+	}
+	defer cacheStatusFile.Close()
+	cacheStatus, err := io.ReadAll(cacheStatusFile)
+	if err != nil {
+		log.Println("Error: ", err.Error())
+		return nil
+	}
+	cacheData := new(Cache)
+	err = json.Unmarshal(cacheStatus, &cacheData.CacheStatus)
+	if err != nil {
+		log.Println("Error: ", err.Error())
+		return nil
+	}
+
 	cacheFile, err := os.OpenFile(
 		cacheName,
 		os.O_RDONLY,
@@ -63,17 +90,12 @@ func Get(abstract [16]byte) *Cache {
 		return nil
 	}
 	defer cacheFile.Close()
-	cacheByte, err := io.ReadAll(cacheFile)
+	cacheData.Body, err = io.ReadAll(cacheFile)
 	if err != nil {
 		log.Println("Error: ", err.Error())
 		return nil
 	}
-	cacheData := new(Cache)
-	err = json.Unmarshal(cacheByte, cacheData)
-	if err != nil {
-		log.Println("Error: ", err.Error())
-		return nil
-	}
+
 	return cacheData
 }
 
@@ -94,6 +116,33 @@ func Save(abstract [16]byte, cache *Cache) {
 	}
 
 	cacheName := "CacheFiles/" + hex.EncodeToString(abstract[:])
+
+	cacheStatusFile, err := os.OpenFile(
+		cacheName+".status",
+		os.O_WRONLY|os.O_TRUNC|os.O_CREATE,
+		0666,
+	)
+	if err != nil {
+		log.Println("Error: ", err.Error())
+		return
+	}
+	cacheStatus, err := json.Marshal(cache.CacheStatus)
+	if err != nil {
+		log.Println("Error: ", err.Error())
+		return
+	}
+	_, err = cacheStatusFile.Write(cacheStatus)
+	if err != nil {
+		log.Println("Error: ", err.Error())
+		cacheStatusFile.Close()
+		return
+	}
+	err = cacheStatusFile.Close()
+	if err != nil {
+		log.Println("Error: ", err.Error())
+		return
+	}
+
 	cacheFile, err := os.OpenFile(
 		cacheName,
 		os.O_WRONLY|os.O_TRUNC|os.O_CREATE,
@@ -103,13 +152,7 @@ func Save(abstract [16]byte, cache *Cache) {
 		log.Println("Error: ", err.Error())
 		return
 	}
-
-	cacheByte, err := json.Marshal(cache)
-	if err != nil {
-		log.Println("Error: ", err.Error())
-		return
-	}
-	_, err = cacheFile.Write(cacheByte)
+	_, err = cacheFile.Write(cache.Body)
 	if err != nil {
 		log.Println("Error: ", err.Error())
 		cacheFile.Close()
