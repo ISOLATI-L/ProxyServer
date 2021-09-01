@@ -2,12 +2,13 @@ package cache
 
 import (
 	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
 type Cache struct {
-	Id         string
 	Header     http.Header
 	StatusCode int
 	Body       []byte
@@ -23,6 +24,16 @@ func GetAbstract(header http.Header) ([16]byte, error) {
 	return abstract, nil
 }
 
-func Check(r *http.Request) (bool, error) {
-	return false, nil
+func GetCache(r *http.Request) *Cache {
+	abstract, err := GetAbstract(r.Header)
+	if err != nil {
+		return nil
+	}
+	log.Println(hex.EncodeToString(abstract[:]))
+	// db.DB.QueryRow(
+	// 	`SELECT COUNT(Cid) FROM blacklist
+	// 	WHERE Cid=UNHEX(?)`,
+	// 	hex.EncodeToString(abstract[:]),
+	// )
+	return &Cache{}
 }

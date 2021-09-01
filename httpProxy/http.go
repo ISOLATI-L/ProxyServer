@@ -13,13 +13,10 @@ func httpHandler(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
-	abstract, err := cache.GetAbstract(r.Header)
-	if err != nil {
-		log.Println("Error: ", err.Error())
-		w.WriteHeader(http.StatusBadGateway)
-		return
+	requestCache := cache.GetCache(r)
+	if requestCache != nil {
+	} else {
 	}
-	log.Printf("%x\n", abstract)
 
 	transport := http.DefaultTransport
 	request := new(http.Request)
