@@ -68,7 +68,7 @@ func Get(abstract [16]byte) *Cache {
 		log.Println("Error: ", err.Error())
 		return nil
 	}
-	var cacheData *Cache
+	cacheData := new(Cache)
 	err = json.Unmarshal(cacheByte, cacheData)
 	if err != nil {
 		log.Println("Error: ", err.Error())
