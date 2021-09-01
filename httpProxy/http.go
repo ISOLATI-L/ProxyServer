@@ -13,7 +13,7 @@ func httpHandler(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
-	abstract, err := cache.GetAbstract(r.Header)
+	abstract, err := cache.GetAbstract(r)
 	var requestCache *cache.Cache = nil
 	if err == nil {
 		requestCache = cache.Get(abstract) // 获取缓存
@@ -60,7 +60,7 @@ func httpHandler(
 			Body:       body,
 		}
 
-		go cache.Save(abstract, requestCache) // 保存缓存
+		// go cache.Save(abstract, requestCache) // 保存缓存
 	}
 
 	h := w.Header()

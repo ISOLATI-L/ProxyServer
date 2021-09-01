@@ -21,8 +21,10 @@ type Cache struct {
 }
 
 // 获取请求的md5校验值
-func GetAbstract(header http.Header) ([16]byte, error) {
-	headerData, err := json.Marshal(header)
+func GetAbstract(r *http.Request) ([16]byte, error) {
+	log.Println(r.Host)
+	log.Println(r.RequestURI)
+	headerData, err := json.Marshal(r.Header)
 	if err != nil {
 		return [16]byte{}, err
 	}
