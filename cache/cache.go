@@ -3,8 +3,10 @@ package cache
 import (
 	"ProxyServer/db"
 	"crypto/md5"
+	"database/sql"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"net/http"
@@ -28,11 +30,12 @@ func GetAbstract(header http.Header) ([16]byte, error) {
 	return abstract, nil
 }
 
-func Get(r *http.Request) *Cache {
-	abstract, err := GetAbstract(r.Header)
-	if err != nil {
-		return nil
-	}
+// 获取缓存
+func Get(abstract [16]byte) *Cache {
+	// abstract, err := GetAbstract(r.Header)
+	// if err != nil {
+	// 	return nil
+	// }
 	log.Println(hex.EncodeToString(abstract[:]))
 	row := db.DB.QueryRow(
 		`SELECT file FROM cache
@@ -40,10 +43,13 @@ func Get(r *http.Request) *Cache {
 		hex.EncodeToString(abstract[:]),
 	)
 	var cacheName string
-	err = row.Scan(
+	err := row.Scan(
 		&cacheName,
 	)
 	if err != nil {
+		if err != sql.ErrNoRows {
+			log.Println("Error: ", err.Error())
+		}
 		return nil
 	}
 	cacheFile, err := os.OpenFile(
@@ -52,16 +58,61 @@ func Get(r *http.Request) *Cache {
 		0666,
 	)
 	if err != nil {
+		log.Println("Error: ", err.Error())
 		return nil
 	}
 	defer cacheFile.Close()
 	cacheByte, err := io.ReadAll(cacheFile)
 	if err != nil {
+		log.Println("Error: ", err.Error())
 		return nil
 	}
 	cacheData := *(**Cache)(unsafe.Pointer(&cacheByte))
 	return cacheData
 }
 
-func Save(cache *Cache) {
+// 保存缓存
+func Save(abstract [16]byte, cache *Cache) {
+	cacheName := "CacheFiles/" + hex.EncodeToString(abstract[:])
+	cacheFile, err := os.OpenFile(
+		cacheName,
+		os.O_WRONLY|os.O_TRUNC|os.O_CREATE,
+		0666,
+	)
+	if err != nil {
+		log.Println("Error: ", err.Error())
+		return
+	}
+	cacheByte := *(*[]byte)(unsafe.Pointer(cache))
+	_, err = cacheFile.Write(cacheByte)
+	if err != nil {
+		log.Println("Error: ", err.Error())
+		cacheFile.Close()
+		return
+	}
+	err = cacheFile.Close()
+	if err != nil {
+		log.Println("Error: ", err.Error())
+		return
+	}
+
+	result, err := db.DB.Exec(
+		`INSERT INTO cache (Cid, file)
+		VALUES (UNHEX(?), ?);`,
+		hex.EncodeToString(abstract[:]),
+		cacheName,
+	)
+	if err != nil {
+		log.Println("Error: ", err.Error())
+		return
+	}
+	affected, err := result.RowsAffected()
+	if err != nil {
+		log.Println("Error: ", err.Error())
+		return
+	}
+	if affected == 0 {
+		log.Println("Error: ", errors.New("affected 0 rows"))
+		return
+	}
 }
