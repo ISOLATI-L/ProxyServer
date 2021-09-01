@@ -24,11 +24,15 @@ type Cache struct {
 func GetAbstract(r *http.Request) ([16]byte, error) {
 	log.Println(r.Host)
 	log.Println(r.RequestURI)
+	log.Println(r.URL)
+
 	headerData, err := json.Marshal(r.Header)
 	if err != nil {
 		return [16]byte{}, err
 	}
 	abstract := md5.Sum(headerData)
+
+	log.Println(hex.EncodeToString(abstract[:]))
 	return abstract, nil
 }
 
@@ -38,7 +42,6 @@ func Get(abstract [16]byte) *Cache {
 	// if err != nil {
 	// 	return nil
 	// }
-	log.Println(hex.EncodeToString(abstract[:]))
 	row := db.DB.QueryRow(
 		`SELECT file FROM cache
 		WHERE Cid=UNHEX(?)`,
