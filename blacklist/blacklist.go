@@ -9,8 +9,7 @@ func Check(host string) (bool, error) {
 	host = strings.Split(host, ":")[0]
 	row := db.DB.QueryRow(
 		`SELECT COUNT(host) FROM blacklist
-		WHERE host=? || ip=?;`,
-		host,
+		WHERE host=?`,
 		host,
 	)
 	var count int
