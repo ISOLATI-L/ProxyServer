@@ -40,10 +40,15 @@ func GetAbstract(r *http.Request) ([16]byte, error) {
 
 // 获取缓存
 func Get(abstract [16]byte) *Cache {
+	// row := db.DB.QueryRow(
+	// 	`SELECT file FROM cache
+	// 	WHERE Cid=UNHEX(?)`,
+	// 	hex.EncodeToString(abstract[:]),
+	// )
 	row := db.DB.QueryRow(
 		`SELECT file FROM cache
-		WHERE Cid=UNHEX(?)`,
-		hex.EncodeToString(abstract[:]),
+		WHERE Cid=?`,
+		abstract,
 	)
 	var cacheName string
 	err := row.Scan(
@@ -162,10 +167,16 @@ func Save(abstract [16]byte, cache *Cache) {
 		return
 	}
 
+	// result, err := db.DB.Exec(
+	// 	`INSERT INTO cache (Cid, file)
+	// 	VALUES (UNHEX(?), ?);`,
+	// 	hex.EncodeToString(abstract[:]),
+	// 	cacheName,
+	// )
 	result, err := db.DB.Exec(
 		`INSERT INTO cache (Cid, file)
-		VALUES (UNHEX(?), ?);`,
-		hex.EncodeToString(abstract[:]),
+		VALUES (?, ?);`,
+		abstract,
 		cacheName,
 	)
 	if err != nil {
