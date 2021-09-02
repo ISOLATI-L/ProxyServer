@@ -43,9 +43,10 @@ func (ph *ProxyHandler) ServeHTTP(
 		return
 	}
 
-	if r.Method == http.MethodConnect {
+	switch r.Method {
+	case http.MethodConnect:
 		httpsHandler(w, r) // 响应https连接
-	} else {
+	default:
 		httpHandler(w, r) // 处理http请求
 	}
 }
