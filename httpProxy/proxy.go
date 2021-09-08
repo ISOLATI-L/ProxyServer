@@ -36,6 +36,7 @@ func (ph *ProxyHandler) ServeHTTP(
 	inBlacklist, err := blacklist.Check(r.Host)
 	if err != nil {
 		log.Printf("An error occurred while connecting to sql: %s\n", err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	if inBlacklist {
