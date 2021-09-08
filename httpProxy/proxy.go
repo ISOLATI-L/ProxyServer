@@ -40,6 +40,7 @@ func (ph *ProxyHandler) ServeHTTP(
 	}
 	if inBlacklist {
 		log.Printf("%s is in blacklist.\n", r.Host)
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
