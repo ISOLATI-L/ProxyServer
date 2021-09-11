@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type CacheStatus struct {
@@ -23,9 +24,33 @@ type Cache struct {
 	Body []byte
 }
 
+var suffixes []string = []string{
+	".php",
+	".jsp",
+	".asp",
+	".aspx",
+
+	".jpg",
+	".png",
+	".bmp",
+	".mp4",
+}
+
 // 获取请求的md5校验值
 func GetAbstract(r *http.Request) ([16]byte, error) {
-	abstract := md5.Sum([]byte(r.RequestURI))
+	isStatic := false
+	for _, suffix := range suffixes {
+		if strings.HasSuffix(r.RequestURI, suffix) {
+			isStatic = true
+			break
+		}
+	}
+	var abstract [16]byte
+	if isStatic {
+		abstract = md5.Sum([]byte(r.RequestURI))
+	} else {
+		abstract = [16]byte{}
+	}
 
 	// log.Println(hex.EncodeToString(abstract[:]))
 	return abstract, nil
@@ -33,6 +58,9 @@ func GetAbstract(r *http.Request) ([16]byte, error) {
 
 // 获取缓存
 func Get(abstract [16]byte) *Cache {
+	if abstract == [16]byte{} {
+		return nil
+	}
 	row := db.DB.QueryRow(
 		`SELECT file FROM cache
 		WHERE Cid=?`,
@@ -93,6 +121,9 @@ func Get(abstract [16]byte) *Cache {
 
 // 保存缓存
 func Save(abstract [16]byte, cache *Cache) {
+	if abstract == [16]byte{} {
+		return
+	}
 	_, err := os.Stat("CacheFiles")
 	if err != nil {
 		if os.IsNotExist(err) {
