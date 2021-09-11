@@ -45,6 +45,7 @@ func GetAbstract(r *http.Request) ([16]byte, error) {
 			break
 		}
 	}
+
 	var abstract [16]byte
 	if isStatic {
 		abstract = md5.Sum([]byte(r.RequestURI))
