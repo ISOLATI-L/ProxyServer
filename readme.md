@@ -18,3 +18,14 @@ CREATE TABLE `blacklist` (
   PRIMARY KEY (`Bid`)
 )
 ```
+#### auto_delete_cache事件
+```
+CREATE EVENT `auto_delete_cache` ON SCHEDULE
+EVERY 1 MINUTE DO
+DELETE FROM
+  cache
+WHERE
+  (
+    unix_timestamp(CURRENT_TIMESTAMP) - unix_timestamp(time)
+  ) > 1800
+```
